@@ -32,21 +32,26 @@ cd /opt
 git clone https://github.com/MaciekDudynski/BBB.git
 cd BBB/
 ```
-On each reboot: (not checked yet)
+On each reboot:
 ```bash
 sudo su
 echo BB-BONE-PRU-01 > /sys/devices/bone_capemgr.9/slots
 cd /opt/BBB/
 ```
+Checking capes:
+```bash
+cat /sys/devices/bone_capemgr.9/slots
+```
 
 # Sources
 
 _first - just reads 1 000 000 times AIN-0 and writes that to file.
+_second - prints current value of AIN-0 and current number of reads.
 
 # TODO
 
 - Simplyfy instuction
-- Add more codes
+- Add more sources
 - Add DAC
 - Add filters
 
