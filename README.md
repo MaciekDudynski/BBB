@@ -45,8 +45,10 @@ cat /sys/devices/bone_capemgr.9/slots
 
 # Sources
 
-_first - just reads 1 000 000 times AIN-0 and writes that to file.
-_second - prints current value of AIN-0 and current number of reads.
+### _first
+just reads 1 000 000 times AIN-0 and writes that to file.
+### _second
+prints current value of AIN-0 and current number of reads.
 
 # TODO
 
