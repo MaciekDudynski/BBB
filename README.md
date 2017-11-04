@@ -1,2 +1,52 @@
 # BBB
-some code for Beaglebone Black (adc/dac)
+
+Everything working for sure on Debian 7.11 (kernel 3.8.13-bone80).
+
+# Instruction
+
+```bash
+sudo su
+apt-get install am335x-pru-package
+mkdir src
+cd src
+wget https://www.freebasic-portal.de/dlfiles/592/libpruio-0.2.tar.bz2
+tar xjf libpruio-0.2.tar.bz2
+cd libpruio-0.2
+cp src/c_wrapper/libpruio.so /usr/local/lib
+ldconfig
+cp src/c_wrapper/pruio*.h* /usr/local/include
+cp src/config/libpruio-0A00.dtbo /lib/firmware
+vim /boot/uEnv.txt
+```
+Unocommect line under
+Disable HDMI/eMMC (v3.8.x)
+```bash
+reboot
+```
+After reboot:
+```bash
+sudo su
+echo BB-BONE-PRU-01 > /sys/devices/bone_capemgr.9/slots
+mv /home/Debian/src/libpruio-0.2 /opt
+cd /opt
+git clone https://github.com/MaciekDudynski/BBB.git
+cd BBB/
+```
+On each reboot: (not checked yet)
+```bash
+sudo su
+echo BB-BONE-PRU-01 > /sys/devices/bone_capemgr.9/slots
+cd /opt/BBB/
+```
+
+# Sources
+
+_first - just reads 1 000 000 times AIN-0 and writes that to file.
+
+# TODO
+
+- Simplyfy instuction
+- Add more codes
+- Add DAC
+- Add filters
+
