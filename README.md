@@ -45,10 +45,12 @@ cat /sys/devices/bone_capemgr.9/slots
 
 # Sources
 
-### _first
-just reads 1 000 000 times AIN-0 and writes that to file.
-### _second
-prints current value of AIN-0 and current number of reads.
+#### _first
+Just reads 1 000 000 times AIN-0 and writes that to file.
+#### _second
+Prints current value of AIN-0 and current number of reads.
+#### _third
+Writes to binary files all reads from AIN-0 (200 kHz). Configuration described in source file.
 
 # TODO
 
@@ -56,4 +58,4 @@ prints current value of AIN-0 and current number of reads.
 - Add more sources
 - Add DAC
 - Add filters
-
+- Add libprui recompile instruction
