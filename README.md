@@ -43,14 +43,29 @@ Checking capes:
 cat /sys/devices/bone_capemgr.9/slots
 ```
 
+# Scripts
+
+#### enable_pru_cape.sh
+Enables BB-BONE-PRU-01 cape.
+#### enable_bb_adc_cape.sh
+Enables BB-ADC cape.
+#### print_slots.sh
+Prints currently loaded capes (/sys/devices/bone_capemgr.9/slots).
+
 # Sources
 
+#### _zero
+Simple program reading (and printing) AIN-0 value in infinite loop.
+This program needs BB-ADC cape.
 #### _first
 Just reads 1 000 000 times AIN-0 and writes that to file.
+This program needs libpruio or BB-BONE-PRU-01 cape.
 #### _second
 Prints current value of AIN-0 and current number of reads.
+This program needs libpruio or BB-BONE-PRU-01 cape.
 #### _third
 Writes to binary files all reads from AIN-0 (200 kHz). Configuration described in source file.
+This program needs libpruio or BB-BONE-PRU-01 cape.
 
 # TODO
 

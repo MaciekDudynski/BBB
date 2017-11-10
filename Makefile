@@ -1,7 +1,10 @@
 CC=gcc
 CFLAGS=-Wall
 LIBS=-lpruio
-OUTFILES=first second third
+OUTFILES=zero first second third
+
+zero: _zero/zero.c
+	$(CC) $(CFLAGS) -o $@ $^
 
 first: _first/first.c
 	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
