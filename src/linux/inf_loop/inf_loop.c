@@ -20,7 +20,7 @@ int main( int argn, char ** args )
         in = fopen( AIN_0, "rb" );
         fread( value, sizeof( char ), 4, in );
         fclose( in );
-        printf( "%s\n", value );
+        printf( "%d\n", atoi( value ) );
     }
     
     return 0;

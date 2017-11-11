@@ -1,0 +1,21 @@
+#! /bin/bash
+
+usage() { echo "Usage: $0 -f <folder>" 1>&2; exit 1; }
+
+while getopts "f:" flag
+do
+    case $flag in
+        f)
+             f=${OPTARG}
+             shift
+             ;;
+    esac
+    shift
+done
+
+if [ -z "${f}" ]
+then
+    usage
+else
+    gcc -Wall ${f}/${f}.c -o ${f}_ -lpruio
+fi

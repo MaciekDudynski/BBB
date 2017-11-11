@@ -15,7 +15,7 @@ int main(int argc, char **argv)
         out = fopen( "first_reads.txt", "w" );
         for( n = 1; n <= 1000000; n++ )
         {
-            fprintf( out, " %4X", io->Adc->Value[1] ); 
+            fprintf( out, " %4X", io->Adc->Value[1] );
             // if( n % 10 == 0 )
                 // printf( "\n" );
         }
