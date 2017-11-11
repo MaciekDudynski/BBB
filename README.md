@@ -54,16 +54,20 @@ Prints currently loaded capes (/sys/devices/bone_capemgr.9/slots).
 
 # Sources
 
-#### _zero
+#### linux/inf_loop
 Simple program reading (and printing) AIN-0 value in infinite loop.
 This program needs BB-ADC cape.
-#### _first
+#### linux/read_spi_dac
+Simple program reading value (CH0) from connected with SPI ADC.
+This program needs BB-SPIDEV0 cape.
+
+#### pru/simple_reads
 Just reads 1 000 000 times AIN-0 and writes that to file.
 This program needs libpruio or BB-BONE-PRU-01 cape.
-#### _second
+#### pru/prints_value_rt
 Prints current value of AIN-0 and current number of reads.
 This program needs libpruio or BB-BONE-PRU-01 cape.
-#### _third
+#### pru/read_to_file
 Writes to binary files all reads from AIN-0 (200 kHz). Configuration described in source file.
 This program needs libpruio or BB-BONE-PRU-01 cape.
 
@@ -74,3 +78,7 @@ This program needs libpruio or BB-BONE-PRU-01 cape.
 - Add DAC
 - Add filters
 - Add libprui recompile instruction
+
+# SPI BUS
+
+The spi_bus files are taken from Derek Molloy. (https://github.com/derekmolloy/exploringBB).
