@@ -1,30 +1,3 @@
-# PRU_CGT environment variable must point to the TI PRU code gen tools directory. E.g.:
-#(Desktop Linux) export PRU_CGT=/path/to/pru/code/gen/tools/ti-cgt-pru_2.1.2
-#(Windows) set PRU_CGT=C:/path/to/pru/code/gen/tools/ti-cgt-pru_2.1.2
-#(ARM Linux*) export PRU_CGT=/usr/share/ti/cgt-pru
-#
-# *ARM Linux also needs to create a symbolic link to the /usr/bin/ directory in
-# order to use the same Makefile
-#(ARM Linux) ln -s /usr/bin/ /usr/share/ti/cgt-pru/bin
-
-ifndef PRU_CGT
-define ERROR_BODY
-
-*******************************************************************************
-PRU_CGT environment variable is not set. Examples given:
-(Desktop Linux) export PRU_CGT=/path/to/pru/code/gen/tools/ti-cgt-pru_2.1.2
-(Windows) set PRU_CGT=C:/path/to/pru/code/gen/tools/ti-cgt-pru_2.1.2
-(ARM Linux*) export PRU_CGT=/usr/share/ti/cgt-pru
-
-*ARM Linux also needs to create a symbolic link to the /usr/bin/ directory in
-order to use the same Makefile
-(ARM Linux) ln -s /usr/bin/ /usr/share/ti/cgt-pru/bin
-*******************************************************************************
-
-endef
-$(error $(ERROR_BODY))
-endif
-
 MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 CURRENT_DIR := $(notdir $(patsubst %/,%,$(dir $(MKFILE_PATH))))
 PROJ_NAME=$(CURRENT_DIR)
