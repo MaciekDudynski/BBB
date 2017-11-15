@@ -1,37 +1,15 @@
-/*
- *Written by Vaibhav Choudhary under GSOC-2016 for BeagleBoard.org
- *Copyright (C) 2016 Vaibhav Choudhary -www.vaibhavchoudhary.com
- *
- *PRU-SPI FIRMWARE
- *
- *This code may be copied and/or modified freely according to GNU General Public  
- *License version 2 as published by the Free Software Foundation, provided   
- *the following conditions are also met:
- *1) Redistributions/adaptions of source code must retain this copyright
- *   notice on the top, giving credit to the original author, along with 
- *   this list of conditions.
- *
- *2) Redistributions in binary form, compiled from this source code and/or 
- *   modified/adapted versions of this source code, must include this copyright 
- *   notice giving credit to the original author, along with this list of conditions 
- *   in the documentation and other materials provided with the
- *   distribution.
- *
- *3) The original author shall not held for any loss arising from using this code.
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE
- */
-
 #include <stdint.h>
 #include <pru_cfg.h>
 #include "resource_table_empty.h"
 
-#define MOSI	15	// P8_11
-#define CLK	14	// P8_12
-#define MISO	5	// P9_27
-#define CS	2	// P9_30
-#define DEB	0	// P9_31
+#define DELAY_TIME	200000000 	// 5 is OK
+
+#define CLK		6	// P8_39 pruout blue
+#define ADC_MISO	4	// P8_41 pruin green
+#define ADC_MOSI	2	// P8_43 pruout yellow
+#define ADC_CS		0	// P8_45 pruout purple
+#define DAC_MOSI	3	// p8_44 pruout yellow
+#define DAC_CS		1	// P8_46 pruout purple
 
 volatile register uint32_t __R30;
 volatile register uint32_t __R31;
@@ -49,34 +27,51 @@ void main()
 	__R30 = 0x0000;
 	__R31 = 0x0000;
 
+	__R30 ^= (1 << ADC_CS);
+	__R30 ^= (1 << DAC_CS);
+
 	while( 1 )
 	{
 		__R30 &= ~(1 << CLK);
 
-		__R30 &= ~(1 << CS);
+		__R30 &= ~(1 << ADC_CS);
 
 		/* init ADC */
 
-		__R30 ^= (1 << DEB);
-		__R30 |= (1 << MOSI);
+		__R30 |= (1 << ADC_MOSI);	// 1
 		__R30 ^= (1 << CLK);
+		__delay_cycles( DELAY_TIME );
 		__R30 ^= (1 << CLK);
-		__R30 |= (1 << MOSI);
-		__R30 ^= (1 << CLK);
-		__R30 ^= (1 << CLK);
-		__R30 &= ~(1 << MOSI);
-		__R30 ^= (1 << CLK);
-		__R30 ^= (1 << CLK);
-		__R30 &= ~(1 << MOSI);
-		__R30 ^= (1 << CLK);
-		__R30 ^= (1 << CLK);
-		__R30 &= ~(1 << MOSI);
-		__R30 ^= (1 << CLK);
-		__R30 ^= (1 << CLK);
+		__delay_cycles( DELAY_TIME );
 
-		__R30 ^= (1 << DEB);
+		__R30 |= (1 << ADC_MOSI);	// 1
 		__R30 ^= (1 << CLK);
+		__delay_cycles( DELAY_TIME );
 		__R30 ^= (1 << CLK);
+		__delay_cycles( DELAY_TIME );
+
+		__R30 &= ~(1 << ADC_MOSI);	// 0
+		__R30 ^= (1 << CLK);
+		__delay_cycles( DELAY_TIME );
+		__R30 ^= (1 << CLK);
+		__delay_cycles( DELAY_TIME );
+
+		__R30 &= ~(1 << ADC_MOSI);	// 0
+		__R30 ^= (1 << CLK);
+		__delay_cycles( DELAY_TIME );
+		__R30 ^= (1 << CLK);
+		__delay_cycles( DELAY_TIME );
+
+		__R30 &= ~(1 << ADC_MOSI);	// 0
+		__R30 ^= (1 << CLK);
+		__delay_cycles( DELAY_TIME );
+		__R30 ^= (1 << CLK);
+		__delay_cycles( DELAY_TIME );
+
+		__R30 ^= (1 << CLK);		// wait
+		__delay_cycles( DELAY_TIME );
+		__R30 ^= (1 << CLK);	
+		__delay_cycles( DELAY_TIME );
 
 		/* read ADC */
 
@@ -85,35 +80,66 @@ void main()
 			buf = buf << 1;
 
 			__R30 ^= (1 << CLK);
+			__delay_cycles( DELAY_TIME );
 
-			if( __R31 & (1 << MISO) )
+			if( __R31 & (1 << ADC_MISO) )
 				buf |= 0x01;
 			else
 				buf &= ~(0x01);
-
+		
 			__R30 ^= (1 << CLK);
+			__delay_cycles( DELAY_TIME );
 		}
 
-		__R30 |= (1 << CS);	
+		__R30 |= (1 << ADC_CS);
+
+		__R30 &= ~(1 << DAC_CS);
 
 		/* init DAC */
 
+		__R30 &= ~(1 << DAC_MOSI);	// 0 
+		__R30 ^= (1 << CLK);
+		__delay_cycles( DELAY_TIME );
+		__R30 ^= (1 << CLK);
+		__delay_cycles( DELAY_TIME );
 
+		__R30 &= ~(1 << DAC_MOSI);	// 0
+		__R30 ^= (1 << CLK);
+		__delay_cycles( DELAY_TIME );
+		__R30 ^= (1 << CLK);
+		__delay_cycles( DELAY_TIME );
+
+		__R30 &= ~(1 << DAC_MOSI);	// 1
+		__R30 ^= (1 << CLK);
+		__delay_cycles( DELAY_TIME );
+		__R30 ^= (1 << CLK);
+		__delay_cycles( DELAY_TIME );
+
+		__R30 |= (1 << DAC_MOSI);	// 1
+		__R30 ^= (1 << CLK);
+		__delay_cycles( DELAY_TIME );
+		__R30 ^= (1 << CLK);
+		__delay_cycles( DELAY_TIME );
 
 		/* write DAC */
 
 		for( i = 0; i < 12; ++i )
 		{
 			if( buf & 0x0800 )
-				__R30 |= (1 << MOSI);
+				__R30 |= (1 << DAC_MOSI);
 			else
-				__R30 &= ~(1 << MOSI);
+				__R30 &= ~(1 << DAC_MOSI);
 
 			__R30 ^= (1 << CLK);
+			__delay_cycles( DELAY_TIME );
 			__R30 ^= (1 << CLK);
+
+			__delay_cycles( DELAY_TIME );
 
 			buf = buf << 1;
 		}
 
+		__R30 |= (1 << DAC_CS);
+		__R30 &= ~(1 << DAC_MOSI);
 	}
 }
