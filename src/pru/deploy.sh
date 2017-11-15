@@ -1,6 +1,6 @@
 PRU_CORE=0
 
-echo "-placing firmware"
+echo "-Placing firmware"
 	cp gen/*.out /lib/firmware/am335x-pru$PRU_CORE-fw
 
 echo "-Rebooting"
