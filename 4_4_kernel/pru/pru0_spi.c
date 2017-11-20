@@ -2,7 +2,7 @@
 #include <pru_cfg.h>
 #include "resource_table_empty.h"
 
-#define DELAY_TIME	200000000 	// 5 is OK
+#define DELAY_TIME	5 	// 5 is OK
 
 #define CLK		6	// P8_39 pruout blue
 #define ADC_MISO	4	// P8_41 pruin green
