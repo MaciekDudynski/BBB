@@ -44,6 +44,10 @@ uint8_t adc_rx[3] = {
 	0x00, 0x00, 0x00
 };
 
+uint8_t dac_tx[2]= {
+	0xC0, 0x00
+};
+
 static void adc_hex_dump( const void *src, char *prefix )
 {
 	int i = 0;
@@ -55,6 +59,20 @@ static void adc_hex_dump( const void *src, char *prefix )
 		printf( "%02X ", *(address + i) );
 	}
 	uint16_t val = ( (*(address + 1) & 0x0F ) << 8 ) | *(address + 2);
+	printf( "| %4d\n", val );
+}
+
+static void dac_hex_dump( const void *src, char *prefix )
+{
+	int i = 0;
+	const unsigned char *address = src;
+
+	printf( "%s | ", prefix );
+	for( ; i < 2; ++i )
+	{
+		printf( "%02X ", *(address + i) );
+	}
+	uint16_t val = ( (*(address) & 0x0F ) << 8 ) | *(address + 1);
 	printf( "| %4d\n", val );
 }
 
@@ -72,12 +90,36 @@ static void transfer_adc( int fd )
 
 	ret = ioctl( fd, SPI_IOC_MESSAGE(1), &tr );
 	if( ret < 1 )
-		pabort( "can't send spi message" );
+		pabort( "Can't send spi message: ADC" );
 
 	if( verbose )
 	{
 		adc_hex_dump( adc_tx, "ADC TX" );
 		adc_hex_dump( adc_rx, "ADC RX" );
+	}		
+}
+
+static void transfer_dac( int fd )
+{
+	dac_tx[0] = adc_rx[1] & 0x0F;
+	dac_tx[1] = adc_rx[2];
+	
+	int ret;	
+	struct spi_ioc_transfer tr = {
+		.tx_buf = (unsigned long)dac_tx,
+		.len = 2,
+		.delay_usecs = 0,
+		.speed_hz = speed,
+		.bits_per_word = bits,
+	};
+
+	ret = ioctl( fd, SPI_IOC_MESSAGE(1), &tr );
+	if( ret < 1 )
+		pabort( "Can't send spi message: DAC" );
+
+	if( verbose )
+	{
+		dac_hex_dump( dac_tx, "DAC TX" );
 	}		
 }
 
@@ -117,58 +159,81 @@ static void parse_opts( int argc, char *argv[] )
 int main( int argc, char *argv[] )
 {
 	int ret = 0;
-	int adc_fd;
+	int adc_fd, dac_fd;
 
 	parse_opts( argc, argv );
 
 	adc_fd = open( "/dev/spidev1.0", O_RDWR );
 	if( adc_fd < 0 )
-		pabort( "can't open device" );
+		pabort( "Can't open device: /dev/spidev1.0" );
+	dac_fd = open( "/dev/spidev2.0", O_RDWR );
+	if( dac_fd < 0 )
+		pabort( "Can't open device: /dev/spidev2.0" );
 
 	/*
 	 * spi mode
 	 */
 	ret = ioctl( adc_fd, SPI_IOC_WR_MODE32, &mode );
 	if( ret == -1 )
-		pabort( "can't set spi mode" );
+		pabort( "Can't set SPI mode: ADC" );
+	ret = ioctl( dac_fd, SPI_IOC_WR_MODE32, &mode );
+	if( ret == -1 )
+		pabort( "Can't set SPI mode: DAC" );
 
 	ret = ioctl( adc_fd, SPI_IOC_RD_MODE32, &mode );
 	if( ret == -1 )
-		pabort( "can't get spi mode" );
+		pabort( "Can't get SPI mode: ADC" );
+	ret = ioctl( dac_fd, SPI_IOC_RD_MODE32, &mode );
+	if( ret == -1 )
+		pabort( "Can't get SPI mode: DAC" );
 
 	/*
 	 * bits per word
 	 */
 	ret = ioctl( adc_fd, SPI_IOC_WR_BITS_PER_WORD, &bits );
 	if( ret == -1 )
-		pabort( "can't set bits per word" );
+		pabort( "Can't set bits per word: ADC" );
+	ret = ioctl( dac_fd, SPI_IOC_WR_BITS_PER_WORD, &bits );
+	if( ret == -1 )
+		pabort( "Can't set bits per word: DAC" );
 
 	ret = ioctl( adc_fd, SPI_IOC_RD_BITS_PER_WORD, &bits );
 	if( ret == -1 )
-		pabort( "can't get bits per word" );
+		pabort( "Can't get bits per word: ADC" );
+	ret = ioctl( dac_fd, SPI_IOC_RD_BITS_PER_WORD, &bits );
+	if( ret == -1 )
+		pabort( "Can't get bits per word: DAC" );
 
 	/*
 	 * max speed hz
 	 */
 	ret = ioctl( adc_fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed );
 	if( ret == -1 )
-		pabort( "can't set max speed hz" );
+		pabort( "Can't set max speed Hz: ADC" );
+	ret = ioctl( dac_fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed );
+	if( ret == -1 )
+		pabort( "Can't set max speed Hz: DAC" );
 
 	ret = ioctl( adc_fd, SPI_IOC_RD_MAX_SPEED_HZ, &speed );
 	if( ret == -1 )
-		pabort( "can't get max speed hz" );
+		pabort( "Can't get max speed Hz: ADC" );
+	ret = ioctl( dac_fd, SPI_IOC_RD_MAX_SPEED_HZ, &speed );
+	if( ret == -1 )
+		pabort( "Can't get max speed Hz: DAC" );
 
-	printf( "spi mode: 0x%x\n", mode );
-	printf( "bits per word: %d\n", bits );
-	printf( "max speed: %d Hz (%d KHz)\n", speed, speed/1000 );
+	printf( "SPI mode: 0x%x\n", mode );
+	printf( "Bits per word: %d\n", bits );
+	printf( "Max speed: %d Hz (%d KHz)\n", speed, speed/1000 );
 	
 	uint16_t i = 0;
 	for( ; i < 10; ++i )
 	{
 		transfer_adc( adc_fd );
+		transfer_dac( dac_fd );
 	}
 
 	close( adc_fd );
+	close( dac_fd );
 
 	return ret;
 }
