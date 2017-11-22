@@ -133,7 +133,6 @@ void main()
 			__R30 ^= (1 << CLK);
 			__delay_cycles( DELAY_TIME );
 			__R30 ^= (1 << CLK);
-
 			__delay_cycles( DELAY_TIME );
 
 			buf = buf << 1;
@@ -141,5 +140,7 @@ void main()
 
 		__R30 |= (1 << DAC_CS);
 		__R30 &= ~(1 << DAC_MOSI);
+
+		buf = 0x0000;
 	}
 }
