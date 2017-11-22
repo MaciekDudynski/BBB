@@ -58,12 +58,12 @@ static void adc_hex_dump( const void *src, char *prefix )
 	printf( "| %4d\n", val );
 }
 
-static void transfer_adc( int fd, uint8_t const *tx, uint8_t const *rx )
+static void transfer_adc( int fd )
 {
 	int ret;
 	struct spi_ioc_transfer tr = {
-		.tx_buf = (unsigned long)tx,
-		.rx_buf = (unsigned long)rx,
+		.tx_buf = (unsigned long)adc_tx,
+		.rx_buf = (unsigned long)adc_rx,
 		.len = 3,
 		.delay_usecs = 0,
 		.speed_hz = speed,
@@ -76,8 +76,8 @@ static void transfer_adc( int fd, uint8_t const *tx, uint8_t const *rx )
 
 	if( verbose )
 	{
-		adc_hex_dump( tx, "ADC TX" );
-		adc_hex_dump( rx, "ADC RX" );
+		adc_hex_dump( adc_tx, "ADC TX" );
+		adc_hex_dump( adc_rx, "ADC RX" );
 	}		
 }
 
@@ -165,7 +165,7 @@ int main( int argc, char *argv[] )
 	uint16_t i = 0;
 	for( ; i < 10; ++i )
 	{
-		transfer_adc( adc_fd, adc_tx, adc_rx );
+		transfer_adc( adc_fd );
 	}
 
 	close( adc_fd );
