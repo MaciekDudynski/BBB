@@ -99,7 +99,7 @@ static void print_usage(const char *prog)
 {
 	printf("Usage: %s [-DsbdlHOLC3vpNR24SI]\n", prog);
 	puts("  -b --bpw      bits per word\n"
-	     "  -v --verbose  Verbose (show tx buffer)\n"
+	     "  -v --verbose  Verbose (show tx buffer)\n");
 	exit(1);
 }
 
