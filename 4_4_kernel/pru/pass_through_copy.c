@@ -36,62 +36,51 @@ void main()
 
 		__R30 &= ~(1 << ADC_CS);
 
-		__R30 |= (1 << ADC_MOSI);	// 1 - ADC
+		/* init ADC */
+
+		__R30 |= (1 << ADC_MOSI);	// 1
 		__R30 ^= (1 << CLK);
 		__delay_cycles( DELAY_TIME );
 		__R30 ^= (1 << CLK);
 		__delay_cycles( DELAY_TIME );
 
-		__R30 |= (1 << ADC_MOSI);	// 1 - ADC
+		__R30 |= (1 << ADC_MOSI);	// 1
 		__R30 ^= (1 << CLK);
 		__delay_cycles( DELAY_TIME );
 		__R30 ^= (1 << CLK);
 		__delay_cycles( DELAY_TIME );
 
-		__R30 &= ~(1 << DAC_CS);
-
-		__R30 &= ~(1 << ADC_MOSI);	// 0 - ADC
-		__R30 &= ~(1 << DAC_MOSI);	// 0 - DAC
+		__R30 &= ~(1 << ADC_MOSI);	// 0
 		__R30 ^= (1 << CLK);
 		__delay_cycles( DELAY_TIME );
 		__R30 ^= (1 << CLK);
 		__delay_cycles( DELAY_TIME );
 
-		__R30 &= ~(1 << ADC_MOSI);	// 0 - ADC
-		__R30 &= ~(1 << DAC_MOSI);	// 0 - DAC
+		__R30 &= ~(1 << ADC_MOSI);	// 0
 		__R30 ^= (1 << CLK);
 		__delay_cycles( DELAY_TIME );
 		__R30 ^= (1 << CLK);
 		__delay_cycles( DELAY_TIME );
 
-		__R30 &= ~(1 << ADC_MOSI);	// 0 - ADC
-		__R30 &= ~(1 << DAC_MOSI);	// 1 - DAC
+		__R30 &= ~(1 << ADC_MOSI);	// 0
 		__R30 ^= (1 << CLK);
 		__delay_cycles( DELAY_TIME );
 		__R30 ^= (1 << CLK);
 		__delay_cycles( DELAY_TIME );
 
-		__R30 |= (1 << DAC_MOSI);	// 1 - DAC
-		__R30 ^= (1 << CLK);		// wait - ADC
+		__R30 ^= (1 << CLK);		// wait
 		__delay_cycles( DELAY_TIME );
 		__R30 ^= (1 << CLK);	
 		__delay_cycles( DELAY_TIME );
 
+		/* read ADC */
+
 		for( i = 0; i < 12; ++i )
 		{
-			/* write DAC */
-
-			if( buf & 0x0800 )
-				__R30 |= (1 << DAC_MOSI);
-			else
-				__R30 &= ~(1 << DAC_MOSI);
-
 			buf = buf << 1;
 
 			__R30 ^= (1 << CLK);
 			__delay_cycles( DELAY_TIME );
-
-			/* read ADC */
 
 			if( __R31 & (1 << ADC_MISO) )
 				buf |= 0x01;
@@ -103,6 +92,55 @@ void main()
 		}
 
 		__R30 |= (1 << ADC_CS);
+
+		__R30 &= ~(1 << DAC_CS);
+
+		/* init DAC */
+
+		__R30 &= ~(1 << DAC_MOSI);	// 0 
+		__R30 ^= (1 << CLK);
+		__delay_cycles( DELAY_TIME );
+		__R30 ^= (1 << CLK);
+		__delay_cycles( DELAY_TIME );
+
+		__R30 &= ~(1 << DAC_MOSI);	// 0
+		__R30 ^= (1 << CLK);
+		__delay_cycles( DELAY_TIME );
+		__R30 ^= (1 << CLK);
+		__delay_cycles( DELAY_TIME );
+
+		__R30 &= ~(1 << DAC_MOSI);	// 1
+		__R30 ^= (1 << CLK);
+		__delay_cycles( DELAY_TIME );
+		__R30 ^= (1 << CLK);
+		__delay_cycles( DELAY_TIME );
+
+		__R30 |= (1 << DAC_MOSI);	// 1
+		__R30 ^= (1 << CLK);
+		__delay_cycles( DELAY_TIME );
+		__R30 ^= (1 << CLK);
+		__delay_cycles( DELAY_TIME );
+
+		/* write DAC */
+
+		for( i = 0; i < 12; ++i )
+		{
+			if( buf & 0x0800 )
+				__R30 |= (1 << DAC_MOSI);
+			else
+				__R30 &= ~(1 << DAC_MOSI);
+
+			__R30 ^= (1 << CLK);
+			__delay_cycles( DELAY_TIME );
+			__R30 ^= (1 << CLK);
+			__delay_cycles( DELAY_TIME );
+
+			buf = buf << 1;
+		}
+
 		__R30 |= (1 << DAC_CS);
+		__R30 &= ~(1 << DAC_MOSI);
+
+		buf = 0x0000;
 	}
 }
