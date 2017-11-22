@@ -45,7 +45,7 @@ uint8_t adc_rx[3] = {
 };
 
 uint8_t dac_tx[2]= {
-	0xC0, 0x00
+	0x30, 0x00
 };
 
 static void adc_hex_dump( const void *src, char *prefix )
@@ -73,7 +73,7 @@ static void dac_hex_dump( const void *src, char *prefix )
 		printf( "%02X ", *(address + i) );
 	}
 	uint16_t val = ( (*(address) & 0x0F ) << 8 ) | *(address + 1);
-	printf( "| %4d\n", val );
+	printf( "   | %4d\n", val );
 }
 
 static void transfer_adc( int fd )
@@ -102,6 +102,7 @@ static void transfer_adc( int fd )
 static void transfer_dac( int fd )
 {
 	dac_tx[0] = adc_rx[1] & 0x0F;
+	dac_tx[0] |= 0x30;
 	dac_tx[1] = adc_rx[2];
 	
 	int ret;	
@@ -226,7 +227,7 @@ int main( int argc, char *argv[] )
 	printf( "Max speed: %d Hz (%d KHz)\n", speed, speed/1000 );
 	
 	uint16_t i = 0;
-	for( ; i < 10; ++i )
+	while( 1 )
 	{
 		transfer_adc( adc_fd );
 		transfer_dac( dac_fd );
