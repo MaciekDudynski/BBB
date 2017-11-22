@@ -1,4 +1,4 @@
-PRU_CORE=0
+PRU_CORE=1
 
 echo "-Placing firmware"
 	cp gen/*.out /lib/firmware/am335x-pru$PRU_CORE-fw
