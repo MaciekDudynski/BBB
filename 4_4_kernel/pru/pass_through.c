@@ -2,7 +2,7 @@
 #include <pru_cfg.h>
 #include "resource_table_empty.h"
 
-#define DELAY_TIME	5 	// 5 is OK
+#define DELAY_TIME	50 	// 200MHz / 2MHz / 2 = 50
 
 #define CLK		6	// P8_39 pruout blue
 #define ADC_MISO	4	// P8_41 pruin green
@@ -14,7 +14,7 @@
 volatile register uint32_t __R30;
 volatile register uint32_t __R31;
 
-uint8_t i = 0;
+uint8_t bit = 0;
 
 void main()
 {
@@ -77,7 +77,7 @@ void main()
 		__R30 ^= (1 << CLK);	
 		__delay_cycles( DELAY_TIME );
 
-		for( i = 0; i < 12; ++i )
+		for( bit = 0; bit < 12; ++bit )
 		{
 			/* write DAC */
 
