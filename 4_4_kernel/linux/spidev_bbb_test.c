@@ -25,8 +25,6 @@
 #include <linux/types.h>
 #include <linux/spi/spidev.h>
 
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
-
 static void pabort(const char *s)
 {
 	perror(s);
@@ -35,14 +33,16 @@ static void pabort(const char *s)
 
 static uint32_t mode;
 static uint8_t bits = 8;
-static uint32_t speed = 500000;
+static uint32_t speed = 100000;
 static int verbose;
 
-uint8_t default_tx[] = {
-	0x06, 0x00, 0x00,
+uint8_t default_tx[3]= {
+	0x06, 0x00, 0x00
 };
 
-uint8_t default_rx[ARRAY_SIZE(default_tx)] = {0, };
+uint8_t default_rx[3] = {
+	0x00, 0x00, 0x00
+};
 
 static void hex_dump(const void *src, size_t length, size_t line_size,
 		     char *prefix)
@@ -97,9 +97,8 @@ static void transfer(int fd, uint8_t const *tx, uint8_t const *rx, size_t len)
 
 static void print_usage(const char *prog)
 {
-	printf("Usage: %s [-DsbdlHOLC3vpNR24SI]\n", prog);
-	puts("  -b --bpw      bits per word\n"
-	     "  -v --verbose  Verbose (show tx buffer)\n");
+	printf("Usage: %s [-v]\n", prog);
+	puts("  -v --verbose  Verbose (show tx buffer)\n");
 	exit(1);
 }
 
@@ -107,22 +106,18 @@ static void parse_opts(int argc, char *argv[])
 {
 	while (1) {
 		static const struct option lopts[] = {
-			{ "bpw",     1, 0, 'b' },
 			{ "verbose", 0, 0, 'v' },
 			{ NULL, 0, 0, 0 },
 		};
 		int c;
 
-		c = getopt_long(argc, argv, "D:s:d:b:i:o:lHOLC3NR24p:vS:I:",
+		c = getopt_long(argc, argv, "v",
 				lopts, NULL);
 
 		if( c == -1 )
 			break;
 
 		switch (c) {
-		case 'b':
-			bits = atoi(optarg);
-			break;
 		case 'v':
 			verbose = 1;
 			break;
@@ -181,7 +176,9 @@ int main(int argc, char *argv[])
 	printf("bits per word: %d\n", bits);
 	printf("max speed: %d Hz (%d KHz)\n", speed, speed/1000);
 	
-	transfer( fd, default_tx, default_rx, sizeof(default_tx) );
+	uint16_t i = 0;
+	for( ; i < 10; ++i )
+		transfer( fd, default_tx, default_rx, sizeof(default_tx) );
 
 	close( fd );
 
