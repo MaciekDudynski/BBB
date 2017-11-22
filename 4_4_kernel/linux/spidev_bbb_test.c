@@ -33,7 +33,7 @@ static void pabort(const char *s)
 
 static uint32_t mode;
 static uint8_t bits = 8;
-static uint32_t speed = 500000;
+static uint32_t speed = 2000000;
 static int verbose;
 
 uint8_t adc_tx[3]= {
