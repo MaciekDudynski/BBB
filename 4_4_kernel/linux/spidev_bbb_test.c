@@ -54,7 +54,8 @@ static void adc_hex_dump( const void *src, char *prefix )
 	{
 		printf( "%02X ", *(address + i) );
 	}
-	printf( "| %4d\n", ( (short)(*(address + 1)) << 8 ) | (short)(*(address + 2)) );
+	uint16_t val = ( (*(address + 1) & 0x0F ) << 8 ) | *(address + 2);
+	printf( "| %4d\n", val );
 }
 
 static void transfer_adc( int fd, uint8_t const *tx, uint8_t const *rx )
@@ -75,8 +76,8 @@ static void transfer_adc( int fd, uint8_t const *tx, uint8_t const *rx )
 
 	if( verbose )
 	{
-		adc_hex_dump( tx, len, "ADC TX" );
-		adc_hex_dump( rx, len, "ADC RX" );
+		adc_hex_dump( tx, "ADC TX" );
+		adc_hex_dump( rx, "ADC RX" );
 	}		
 }
 
