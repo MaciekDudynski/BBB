@@ -33,7 +33,8 @@ static void pabort(const char *s)
 
 static uint32_t mode;
 static uint8_t bits = 8;
-static uint32_t speed = 2000000;
+static uint32_t adc_speed = 2000000;
+static uint32_t dac_speed = 20000000;
 static int verbose;
 
 uint8_t adc_tx[3]= {
@@ -84,7 +85,7 @@ static void transfer_adc( int fd )
 		.rx_buf = (unsigned long)adc_rx,
 		.len = 3,
 		.delay_usecs = 0,
-		.speed_hz = speed,
+		.speed_hz = adc_speed,
 		.bits_per_word = bits,
 	};
 
@@ -110,7 +111,7 @@ static void transfer_dac( int fd )
 		.tx_buf = (unsigned long)dac_tx,
 		.len = 2,
 		.delay_usecs = 0,
-		.speed_hz = speed,
+		.speed_hz = dac_speed,
 		.bits_per_word = bits,
 	};
 
@@ -208,23 +209,19 @@ int main( int argc, char *argv[] )
 	/*
 	 * max speed hz
 	 */
-	ret = ioctl( adc_fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed );
+	ret = ioctl( adc_fd, SPI_IOC_WR_MAX_SPEED_HZ, &adc_speed );
 	if( ret == -1 )
 		pabort( "Can't set max speed Hz: ADC" );
-	ret = ioctl( dac_fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed );
+	ret = ioctl( dac_fd, SPI_IOC_WR_MAX_SPEED_HZ, &dac_speed );
 	if( ret == -1 )
 		pabort( "Can't set max speed Hz: DAC" );
 
-	ret = ioctl( adc_fd, SPI_IOC_RD_MAX_SPEED_HZ, &speed );
+	ret = ioctl( adc_fd, SPI_IOC_RD_MAX_SPEED_HZ, &adc_speed );
 	if( ret == -1 )
 		pabort( "Can't get max speed Hz: ADC" );
-	ret = ioctl( dac_fd, SPI_IOC_RD_MAX_SPEED_HZ, &speed );
+	ret = ioctl( dac_fd, SPI_IOC_RD_MAX_SPEED_HZ, &dac_speed );
 	if( ret == -1 )
 		pabort( "Can't get max speed Hz: DAC" );
-
-	printf( "SPI mode: 0x%x\n", mode );
-	printf( "Bits per word: %d\n", bits );
-	printf( "Max speed: %d Hz (%d KHz)\n", speed, speed/1000 );
 	
 	uint16_t i = 0;
 	while( 1 )
