@@ -1,7 +1,7 @@
 PROJ_NAME=$(p)
-LINKER_COMMAND_FILE=../common/AM335x_PRU.cmd
+LINKER_COMMAND_FILE=common/AM335x_PRU.cmd
 LIBS=--library=/opt/pru-software-support-package/lib/rpmsg_lib.lib
-INCLUDE=--include_path=/opt/pru-software-support-package/include --include_path=/opt/pru-software-support-package/include/am335x --include_path=../common
+INCLUDE=--include_path=/opt/pru-software-support-package/include --include_path=/opt/pru-software-support-package/include/am335x --include_path=common
 STACK_SIZE=0x100
 HEAP_SIZE=0x100
 GEN_DIR=$(PROJ_NAME)/gen
@@ -13,9 +13,10 @@ LFLAGS=--reread_libs --warn_sections --stack_size=$(STACK_SIZE) --heap_size=$(HE
 
 TARGET=$(GEN_DIR)/$(PROJ_NAME).out
 MAP=$(GEN_DIR)/$(PROJ_NAME).map
-SOURCES=$(wildcard *.c)
+SOURCES=$(wildcard $(PROJ_NAME)/*.c)
+SOURCES_NAMES=$(patsubst $(PROJ_NAME)/%,%,$(SOURCES))
 #Using .object instead of .obj in order to not conflict with the CCS build process
-OBJECTS=$(patsubst %,$(GEN_DIR)/%,$(SOURCES:.c=.object))
+OBJECTS=$(patsubst %,$(GEN_DIR)/%,$(SOURCES_NAMES:.c=.object))
 
 all: printStart $(TARGET) printEnd
 
@@ -41,7 +42,7 @@ $(TARGET): $(OBJECTS) $(LINKER_COMMAND_FILE)
 	@echo 'Finished building target: $@'
 
 # Invokes the compiler on all c files in the directory to create the object files
-$(GEN_DIR)/%.object: %.c
+$(GEN_DIR)/%.object: $(PROJ_NAME)/%.c
 	@mkdir -p $(GEN_DIR)
 	@echo ''
 	@echo 'Building file: $<'
