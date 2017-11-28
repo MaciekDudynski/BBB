@@ -1,10 +1,12 @@
-PROJ_NAME=$(p)
-LINKER_COMMAND_FILE=../common/AM335x_PRU.cmd
+MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
+CURRENT_DIR := $(notdir $(patsubst %/,%,$(dir $(MKFILE_PATH))))
+PROJ_NAME=$(CURRENT_DIR)
+LINKER_COMMAND_FILE=./AM335x_PRU.cmd
 LIBS=--library=/opt/pru-software-support-package/lib/rpmsg_lib.lib
-INCLUDE=--include_path=/opt/pru-software-support-package/include --include_path=/opt/pru-software-support-package/include/am335x --include_path=../common
+INCLUDE=--include_path=/opt/pru-software-support-package/include --include_path=/opt/pru-software-support-package/include/am335x
 STACK_SIZE=0x100
 HEAP_SIZE=0x100
-GEN_DIR=$(PROJ_NAME)/gen
+GEN_DIR=gen
 
 #Common compiler and linker flags (Defined in 'PRU Optimizing C/C++ Compiler User's Guide)
 CFLAGS=-v3 -O2 --display_error_number --endian=little --hardware_mac=on --obj_directory=$(GEN_DIR) --pp_directory=$(GEN_DIR) -ppd -ppa

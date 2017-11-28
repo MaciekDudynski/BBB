@@ -1,17 +1,7 @@
-#! /bin/bash
-
-while getopts "p:" opt; do
-  case $opt in
-    p)
-			proj = $OPTARG
-      ;;
-  esac
-done
-
 PRU_CORE=1
 
 echo "-Placing firmware"
-	cp proj/gen/*.out /lib/firmware/am335x-pru$PRU_CORE-fw
+	cp gen/*.out /lib/firmware/am335x-pru$PRU_CORE-fw
 
 echo "-Rebooting"
 	if [ $PRU_CORE -eq 0 ]
