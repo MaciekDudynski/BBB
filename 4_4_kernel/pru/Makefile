@@ -1,7 +1,7 @@
 PROJ_NAME=$(p)
 LINKER_COMMAND_FILE=common/AM335x_PRU.cmd
-LIBS=--library=/opt/pru-software-support-package/lib/rpmsg_lib.lib
-INCLUDE=--include_path=/opt/pru-software-support-package/include --include_path=/opt/pru-software-support-package/include/am335x --include_path=common
+LIBS=--library=/usr/lib/ti/pru-software-support-package/lib/rpmsg_lib.lib
+INCLUDE=--include_path=/usr/lib/ti/pru-software-support-package/include --include_path=/usr/lib/ti/pru-software-support-package/include/am335x --include_path=common
 STACK_SIZE=0x100
 HEAP_SIZE=0x100
 GEN_DIR=$(PROJ_NAME)/gen
