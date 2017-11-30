@@ -65,7 +65,7 @@ void main()
 		__delay_cycles( DELAY_TIME );
 
 		__R30 &= ~(1 << ADC_MOSI);	// 0 - ADC
-		__R30 &= ~(1 << DAC_MOSI);	// 1 - DAC
+		__R30 |= (1 << DAC_MOSI);	// 1 - DAC
 		__R30 ^= (1 << CLK);
 		__delay_cycles( DELAY_TIME );
 		__R30 ^= (1 << CLK);

@@ -11,7 +11,7 @@
 #define DAC_MOSI	3	// p8_44 pruout yellow
 #define DAC_CS		1	// P8_46 pruout purple
 
-#define SHARED_MEM      0x00010000
+#define SHARED_MEM	0x00010000
 
 volatile register uint32_t __R30;
 volatile register uint32_t __R31;
@@ -70,7 +70,7 @@ void main()
 		__delay_cycles( DELAY_TIME );
 
 		__R30 &= ~(1 << ADC_MOSI);	// 0 - ADC
-		__R30 &= ~(1 << DAC_MOSI);	// 1 - DAC
+		__R30 |= (1 << DAC_MOSI);	// 1 - DAC
 		__R30 ^= (1 << CLK);
 		__delay_cycles( DELAY_TIME );
 		__R30 ^= (1 << CLK);
