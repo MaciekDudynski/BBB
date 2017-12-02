@@ -24,7 +24,7 @@ register uint32_t volatile __R31;
 
 void main()
 {
-	uint8_t * volatile sample_flag = (uint8_t * volatile)SHARED_MEM;
+	uint8_t volatile * sample_flag = (uint8_t volatile *)SHARED_MEM;
 
 	uint8_t bit = 0x00;
 	uint16_t buf = 0x0000;
