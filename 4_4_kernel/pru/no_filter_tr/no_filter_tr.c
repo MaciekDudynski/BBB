@@ -2,7 +2,8 @@
 #include <pru_cfg.h>
 #include "resource_table_empty.h"
 
-#define DELAY_TIME	50 	// 200MHz / 2MHz / 2 = 50
+#define RESOLUTION	12
+#define DELAY_CYCLES	50 	// 200MHz / 2MHz / 2 = 50
 
 #define CLK		6	// P8_39 pruout blue
 #define ADC_MISO	4	// P8_41 pruin green
@@ -13,16 +14,15 @@
 
 #define SHARED_MEM	0x00010000
 
-volatile register uint32_t __R30;
-volatile register uint32_t __R31;
-
-uint8_t bit = 0;
+register uint32_t volatile __R30;
+register uint32_t volatile __R31;
 
 void main()
 {
-	volatile uint8_t * sample_flag = (volatile uint8_t *)SHARED_MEM;
+	uint8_t * volatile sample_flag = (uint8_t * volatile)SHARED_MEM;
 
-	volatile uint16_t buf = 0x0000;
+	uint8_t bit = 0x00;
+	uint16_t buf = 0x0000;
 
 	// Set the CFG Register to direct output instead of serial output
 	CT_CFG.GPCFG0 = 0;
@@ -31,70 +31,81 @@ void main()
 	__R30 = 0x0000;
 	__R31 = 0x0000;
 
-	__R30 &= ~(1 << CLK);
 	__R30 ^= (1 << ADC_CS);
 	__R30 ^= (1 << DAC_CS);
 
 	while( 1 )
 	{
+		__R30 &= ~(1 << CLK);
+		__delay_cycles( DELAY_CYCLES );
+		__R30 |= (1 << CLK);
+		__delay_cycles( DELAY_CYCLES );
+
 		while( *sample_flag == 0 );
 
 		__R30 &= ~(1 << ADC_CS);
 
 		__R30 |= (1 << ADC_MOSI);	// 1 - ADC
-		__R30 ^= (1 << CLK);
-		__delay_cycles( DELAY_TIME );
-		__R30 ^= (1 << CLK);
-		__delay_cycles( DELAY_TIME );
+		__R30 &= ~(1 << CLK);
+		__delay_cycles( DELAY_CYCLES );
+		__R30 |= (1 << CLK);
+		__delay_cycles( DELAY_CYCLES );
 
 		__R30 |= (1 << ADC_MOSI);	// 1 - ADC
-		__R30 ^= (1 << CLK);
-		__delay_cycles( DELAY_TIME );
-		__R30 ^= (1 << CLK);
-		__delay_cycles( DELAY_TIME );
+		__R30 &= ~(1 << CLK);
+		__delay_cycles( DELAY_CYCLES );
+		__R30 |= (1 << CLK);
+		__delay_cycles( DELAY_CYCLES );
+
+		__R30 &= ~(1 << ADC_MOSI);	// 0 - ADC
+		__R30 &= ~(1 << CLK);
+		__delay_cycles( DELAY_CYCLES );
+		__R30 |= (1 << CLK);
+		__delay_cycles( DELAY_CYCLES );
 
 		__R30 &= ~(1 << DAC_CS);
 
 		__R30 &= ~(1 << ADC_MOSI);	// 0 - ADC
 		__R30 &= ~(1 << DAC_MOSI);	// 0 - DAC
-		__R30 ^= (1 << CLK);
-		__delay_cycles( DELAY_TIME );
-		__R30 ^= (1 << CLK);
-		__delay_cycles( DELAY_TIME );
+		__R30 &= ~(1 << CLK);
+		__delay_cycles( DELAY_CYCLES );
+		__R30 |= (1 << CLK);
+		__delay_cycles( DELAY_CYCLES );
 
 		__R30 &= ~(1 << ADC_MOSI);	// 0 - ADC
 		__R30 &= ~(1 << DAC_MOSI);	// 0 - DAC
-		__R30 ^= (1 << CLK);
-		__delay_cycles( DELAY_TIME );
-		__R30 ^= (1 << CLK);
-		__delay_cycles( DELAY_TIME );
+		__R30 &= ~(1 << CLK);
+		__delay_cycles( DELAY_CYCLES );
+		__R30 |= (1 << CLK);
+		__delay_cycles( DELAY_CYCLES );
 
-		__R30 &= ~(1 << ADC_MOSI);	// 0 - ADC
+		// wait - ADC
 		__R30 |= (1 << DAC_MOSI);	// 1 - DAC
-		__R30 ^= (1 << CLK);
-		__delay_cycles( DELAY_TIME );
-		__R30 ^= (1 << CLK);
-		__delay_cycles( DELAY_TIME );
+		__R30 &= ~(1 << CLK);
+		__delay_cycles( DELAY_CYCLES );
+		__R30 |= (1 << CLK);
+		__delay_cycles( DELAY_CYCLES );
 
+		// null bit - ADC
 		__R30 |= (1 << DAC_MOSI);	// 1 - DAC
-		__R30 ^= (1 << CLK);		// wait - ADC
-		__delay_cycles( DELAY_TIME );
-		__R30 ^= (1 << CLK);
-		__delay_cycles( DELAY_TIME );
+		__R30 &= ~(1 << CLK);
+		__delay_cycles( DELAY_CYCLES );
+		__R30 |= (1 << CLK);
+		__delay_cycles( DELAY_CYCLES );
 
-		for( bit = 0; bit < 12; ++bit )
+		for( bit = 0; bit < RESOLUTION; ++bit )
 		{
 			/* write DAC */
 
-			if( buf & 0x0800 )
+			if( buf & (1 << (RESOLUTION - 1)) )
 				__R30 |= (1 << DAC_MOSI);
 			else
 				__R30 &= ~(1 << DAC_MOSI);
 
 			buf = buf << 1;
 
-			__R30 ^= (1 << CLK);
-			__delay_cycles( DELAY_TIME );
+			__R30 &= ~(1 << CLK);
+			__delay_cycles( DELAY_CYCLES );
 
 			/* read ADC */
 
@@ -103,8 +114,8 @@ void main()
 			else
 				buf &= ~(0x01);
 
-			__R30 ^= (1 << CLK);
-			__delay_cycles( DELAY_TIME );
+			__R30 |= (1 << CLK);
+			__delay_cycles( DELAY_CYCLES );
 		}
 
 		__R30 |= (1 << ADC_CS);
