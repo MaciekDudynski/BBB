@@ -11,7 +11,7 @@ register uint32_t volatile __R31;
 
 void main()
 {
-	uint8_t * volatile sample_flag = (uint8_t * volatile)SHARED_MEM;
+	uint8_t volatile * sample_flag = (uint8_t volatile *)SHARED_MEM;
 
 	// Set the CFG Register to direct output instead of serial output
 	CT_CFG.GPCFG0 = 0;
