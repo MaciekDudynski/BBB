@@ -12,13 +12,17 @@
 #define DAC_MOSI	3	// p8_44 pruout yellow
 #define DAC_CS		1	// P8_46 pruout purple
 
-#define BETA		7
+#define SHARED_MEM	0x00010000
+
+#define BETA		10
 
 register uint32_t volatile __R30;
 register uint32_t volatile __R31;
 
 void main()
 {
+	uint8_t volatile * sample_flag = (uint8_t volatile *)SHARED_MEM;
+
 	uint8_t bit = 0x00;
 	uint16_t buf = 0x0000;
 	uint32_t filter_buf = 0x00000000;
@@ -39,6 +43,8 @@ void main()
 		__delay_cycles( DELAY_CYCLES );
 		__R30 |= (1 << CLK);
 		__delay_cycles( DELAY_CYCLES );
+
+		while( *sample_flag == 0 );
 
 		__R30 &= ~(1 << ADC_CS);
 
@@ -117,6 +123,8 @@ void main()
 
 		__R30 |= (1 << ADC_CS);
 		__R30 |= (1 << DAC_CS);
+
+		*sample_flag = 0;
 
 		// clear 15-12 bits
 		buf = buf & 0x0FFF;

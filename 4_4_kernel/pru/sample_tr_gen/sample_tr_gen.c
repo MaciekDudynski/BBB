@@ -2,7 +2,7 @@
 #include <pru_cfg.h>
 #include "resource_table_empty.h"
 
-#define DELAY_CYCLES	2250	// 200MHz / 100kHz = 2000
+#define DELAY_CYCLES	2495	// 200MHz / 100kHz = 2000
 
 #define SHARED_MEM	0x00010000
 
@@ -22,8 +22,8 @@ void main()
 
 		// __R30 ^= (1 << 14); // P8.12
 		// break when nothing is using clock
-		if( *sample_flag > 0 )
-			break;
+		// if( *sample_flag > 0 )
+		//	break;
 		*sample_flag = 1;
 	}
 }
